@@ -1,6 +1,8 @@
 # Cobblestone
 
-**TODO: Add description**
+> A better path to data
+
+Experimental. Exploring leex, yecc, and data access. Inspired by xpath and jq.
 
 ## Installation
 
