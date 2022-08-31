@@ -1,6 +1,6 @@
 Definitions.
 
-INT = [0-9]+
+INT = \-?[0-9]+
 VAR = \.[A-Za-z0-9\s]*
 WHITESPACE = [\s\t\n\r]
 
