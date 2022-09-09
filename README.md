@@ -48,14 +48,14 @@ Inspired by [jq](https://stedolan.github.io/jq/), [JSONPath](https://goessner.ne
 | XPath                | JSONPath                                | Cobblestone                           | Result                                                      |
 | -------------------- | --------------------------------------- | ------------------------------------- | ----------------------------------------------------------- |
 | /store/book/author   | $.store.book[*].author                  | .store.book[].author                  | the authors of all books in the store                       |
-| //author             | $..author                               | Unsupported                           | all authors                                                 |
+| //author             | $..author                               | Not Yet Supported                     | all authors                                                 |
 | /store/\*            | $.store.\*                              | .store                                | all things in store, which are some books and a red bicycle |
-| /store//price        | $.store..price                          | Unsupported                           | the price of everything in the store.                       |
+| /store//price        | $.store..price                          | Not Yet Supported                     | the price of everything in the store.                       |
 | //book[3]            | $..book[2]                              | .store.book[2]                        | the third book                                              |
 | //book[last()]       | $..book[(@.length-1)]<br />$..book[-1:] | .store.book[-1]                       | the last book in order.                                     |
 | //book[position()<3] | $..book[0,1]<br />$..book[:2]           | .store.book[0,1]<br />.store.book[:2] | the first two books                                         |
-| //book[isbn]         | $..book[?(@.isbn)]                      | Unsupported                           | filter all books with isbn number                           |
-| //book[price<10]     | $..book[?(@.price<10)]                  | Unsupported                           | filter all books cheapier than 10                           |
+| //book[isbn]         | $..book[?(@.isbn)]                      | Not Yet Supported                     | filter all books with isbn number                           |
+| //book[price<10]     | $..book[?(@.price<10)]                  | Not Yet Supported                     | filter all books cheapier than 10                           |
 | //\*                 | $..\*                                   | .                                     | all Elements in structure.                                  |
 
 ## Installation
