@@ -3,19 +3,54 @@ defmodule Cobblestone.Path do
     walk_path(input, steps)
   end
 
+  defp all_matches(value, search, acc) when is_map(value) do
+    value
+    |> Map.to_list()
+    |> all_matches(search, acc)
+  end
+
+  defp all_matches([value | tail], search, acc) when is_map(value) do
+    all_matches(Map.to_list(value) ++ tail, search, acc)
+  end
+
+  defp all_matches([{key, value} | tail], search, acc) when is_map(value) do
+    all_matches([{key, Map.to_list(value)} | tail], search, acc)
+  end
+
+  defp all_matches([{key, value} | tail], search, acc) do
+    sub_acc =
+      cond do
+        key == search and is_list(value) -> value
+        key == search -> [value]
+        true -> []
+      end
+
+    all_matches(value, search, sub_acc) ++ all_matches(tail, search, acc)
+  end
+
+  defp all_matches(_tail, _search, acc) do
+    acc
+  end
+
   defp walk_path(input, []) do
     input
   end
 
-  defp walk_path(inputs, [{:local, step} | steps]) when is_list(inputs) do
-    inputs
-    |> Enum.map(&Map.get(&1, step))
+  defp walk_path(input, [{:global, key} | steps]) do
+    input
+    |> all_matches(key, [])
     |> walk_path(steps)
   end
 
-  defp walk_path(input, [{:local, step} | steps]) do
+  defp walk_path(inputs, [{:local, key} | steps]) when is_list(inputs) do
+    inputs
+    |> Enum.map(&Map.get(&1, key))
+    |> walk_path(steps)
+  end
+
+  defp walk_path(input, [{:local, key} | steps]) do
     input
-    |> Map.get(step)
+    |> Map.get(key)
     |> walk_path(steps)
   end
 

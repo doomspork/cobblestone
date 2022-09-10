@@ -2,7 +2,7 @@ Definitions.
 
 INT = \-?[0-9]+
 VAR = [A-Za-z0-9\s]*
-CMP = (<|<=|=|=>|>)
+CMP = (<|<=|=|=>|>|!=)
 WHITESPACE = [\s\t\n\r]
 
 Rules.

@@ -40,13 +40,21 @@ defmodule CobblestoneTest do
   }
 
   describe "get_at_path/2" do
-    test "supports simple `.key` paths" do
+    test "supports `.key` paths" do
       assert %{
                "color" => "red",
                "price" => 19.95
              } == Cobblestone.get_at_path(@sample, ".store.bicycle")
 
       assert "red" == Cobblestone.get_at_path(@sample, ".store.bicycle.color")
+    end
+
+    test "supports `..key` paths" do
+      assert ["red"] == Cobblestone.get_at_path(@sample, "..color")
+    end
+
+    test "supports `.key..key` paths" do
+      assert [19.95, 8.95, 12.99, 8.99, 22.99] == Cobblestone.get_at_path(@sample, ".store..price")
     end
 
     test "supports [index]" do
@@ -57,7 +65,7 @@ defmodule CobblestoneTest do
                  "title" => "Sayings of the Century",
                  "price" => 8.95
                }
-             ] == Cobblestone.get_at_path(@sample, ".store.book[0]")
+             ] == Cobblestone.get_at_path(@sample, "..book[0]")
     end
 
     test "supports [index, index, index]" do
@@ -82,7 +90,7 @@ defmodule CobblestoneTest do
                  "isbn" => "0-395-19395-8",
                  "price" => 22.99
                }
-             ] == Cobblestone.get_at_path(@sample, ".store.book[0,2,3]")
+             ] == Cobblestone.get_at_path(@sample, "..book[0,2,3]")
     end
 
     test "supports [index:index]" do
@@ -93,7 +101,7 @@ defmodule CobblestoneTest do
                  "title" => "Sword of Honour",
                  "price" => 12.99
                }
-             ] == Cobblestone.get_at_path(@sample, ".store.book[1:2]")
+             ] == Cobblestone.get_at_path(@sample, "..book[1:2]")
     end
 
     test "supports [:index]" do
@@ -110,7 +118,7 @@ defmodule CobblestoneTest do
                  "title" => "Sword of Honour",
                  "price" => 12.99
                }
-             ] == Cobblestone.get_at_path(@sample, ".store.book[:2]")
+             ] == Cobblestone.get_at_path(@sample, "..book[:2]")
     end
 
     test "supports [index:]" do
@@ -129,7 +137,7 @@ defmodule CobblestoneTest do
                  "isbn" => "0-395-19395-8",
                  "price" => 22.99
                }
-             ] == Cobblestone.get_at_path(@sample, ".store.book[2:]")
+             ] == Cobblestone.get_at_path(@sample, "..book[2:]")
     end
 
     test "supports [-index]" do
@@ -141,7 +149,7 @@ defmodule CobblestoneTest do
                  "isbn" => "0-395-19395-8",
                  "price" => 22.99
                }
-             ] == Cobblestone.get_at_path(@sample, ".store.book[-1]")
+             ] == Cobblestone.get_at_path(@sample, "..book[-1]")
 
       assert [
                %{
@@ -151,7 +159,7 @@ defmodule CobblestoneTest do
                  "isbn" => "0-553-21311-3",
                  "price" => 8.99
                }
-             ] == Cobblestone.get_at_path(@sample, ".store.book[-2]")
+             ] == Cobblestone.get_at_path(@sample, "..book[-2]")
     end
 
     test "supports [key]" do
@@ -170,7 +178,7 @@ defmodule CobblestoneTest do
                  "price" => 22.99,
                  "title" => "The Lord of the Rings"
                }
-             ] == Cobblestone.get_at_path(@sample, ".store.book[isbn]")
+             ] == Cobblestone.get_at_path(@sample, "..book[isbn]")
     end
 
     test "supports [key<val]" do
@@ -182,7 +190,7 @@ defmodule CobblestoneTest do
                  "price" => 22.99,
                  "title" => "The Lord of the Rings"
                }
-             ] == Cobblestone.get_at_path(@sample, ".store.book[price>20]")
+             ] == Cobblestone.get_at_path(@sample, "..book[price>20]")
     end
   end
 end
