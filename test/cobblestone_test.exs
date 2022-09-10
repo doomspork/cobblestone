@@ -153,5 +153,36 @@ defmodule CobblestoneTest do
                }
              ] == Cobblestone.get_at_path(@sample, ".store.book[-2]")
     end
+
+    test "supports [key]" do
+      assert [
+               %{
+                 "author" => "Herman Melville",
+                 "category" => "fiction",
+                 "isbn" => "0-553-21311-3",
+                 "price" => 8.99,
+                 "title" => "Moby Dick"
+               },
+               %{
+                 "author" => "J. R. R. Tolkien",
+                 "category" => "fiction",
+                 "isbn" => "0-395-19395-8",
+                 "price" => 22.99,
+                 "title" => "The Lord of the Rings"
+               }
+             ] == Cobblestone.get_at_path(@sample, ".store.book[isbn]")
+    end
+
+    test "supports [key<val]" do
+      assert [
+               %{
+                 "author" => "J. R. R. Tolkien",
+                 "category" => "fiction",
+                 "isbn" => "0-395-19395-8",
+                 "price" => 22.99,
+                 "title" => "The Lord of the Rings"
+               }
+             ] == Cobblestone.get_at_path(@sample, ".store.book[price>20]")
+    end
   end
 end

@@ -54,8 +54,8 @@ Inspired by [jq](https://stedolan.github.io/jq/), [JSONPath](https://goessner.ne
 | //book[3]            | $..book[2]                              | .store.book[2]                        | the third book                                              |
 | //book[last()]       | $..book[(@.length-1)]<br />$..book[-1:] | .store.book[-1]                       | the last book in order.                                     |
 | //book[position()<3] | $..book[0,1]<br />$..book[:2]           | .store.book[0,1]<br />.store.book[:2] | the first two books                                         |
-| //book[isbn]         | $..book[?(@.isbn)]                      | Not Yet Supported                     | filter all books with isbn number                           |
-| //book[price<10]     | $..book[?(@.price<10)]                  | Not Yet Supported                     | filter all books cheapier than 10                           |
+| //book[isbn]         | $..book[?(@.isbn)]                      | .store.book[isbn]                     | filter all books with isbn number                           |
+| //book[price<10]     | $..book[?(@.price<10)]                  | .store.book[price<10]                 | filter all books cheapier than 10                           |
 | //\*                 | $..\*                                   | .                                     | all Elements in structure.                                  |
 
 ## Installation
