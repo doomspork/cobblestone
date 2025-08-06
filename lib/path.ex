@@ -47,6 +47,10 @@ defmodule Cobblestone.Path do
     input
   end
 
+  defp walk_path(input, [{:identity} | steps]) do
+    walk_path(input, steps)
+  end
+
   defp walk_path(input, [{:pipe, left_steps, right_steps}]) do
     input
     |> walk_path(left_steps)

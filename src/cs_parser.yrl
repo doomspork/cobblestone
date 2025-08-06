@@ -5,6 +5,7 @@ Rootsymbol pipeline.
 pipeline -> path : '$1'.
 pipeline -> path '|' pipeline : [{pipe, '$1', '$3'}].
 
+path -> '.' : [{identity}].
 path -> step : '$1'.
 path -> path step : '$1' ++ '$2'.
 
