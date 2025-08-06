@@ -75,7 +75,24 @@ defmodule Cobblestone.Path do
     |> walk_path(steps)
   end
 
-  defp walk_path(input, [[] | steps]) do
+  defp walk_path(input, [{:iterator} | steps]) when is_list(input) do
+    # For arrays, [] iterates over each element
+    input
+    |> Enum.flat_map(fn item -> 
+      result = walk_path(item, steps)
+      if is_list(result), do: result, else: [result]
+    end)
+  end
+
+  defp walk_path(input, [{:iterator} | steps]) when is_map(input) do
+    # For objects, [] returns all values (not key-value pairs)
+    input
+    |> Map.values()
+    |> walk_path(steps)
+  end
+
+  defp walk_path(input, [{:iterator} | steps]) do
+    # For other types, just pass through
     walk_path(input, steps)
   end
 
