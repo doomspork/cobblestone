@@ -12,7 +12,7 @@ defmodule Cobblestone.Path do
   - **Local Navigation**: `.key` - Access map keys directly
   - **Global Search**: `..key` - Recursively find all instances of a key
   - **Array Operations**: `[n]`, `[n:m]`, `[n,m,o]` - Index, slice, multi-select
-  - **Collection Iteration**: `[]` - Iterate over arrays or map values  
+  - **Collection Iteration**: `[]` - Iterate over arrays or map values
   - **Filtering**: `[key]`, `[key>value]` - Filter by existence or comparison
   - **Functions**: `select(condition)`, `map(expression)` - Advanced data processing
   - **Pipeline Chaining**: `expr | expr` - Chain operations together
@@ -31,7 +31,7 @@ defmodule Cobblestone.Path do
       iex> Cobblestone.Path.walk(data, steps)
       ["Alice"]
 
-      iex> data = [%{id: 1, active: true}, %{id: 2, active: false}]  
+      iex> data = [%{id: 1, active: true}, %{id: 2, active: false}]
       iex> steps = [{:iterator}, {:function, "select", [[{:local, "active"}]]}]
       iex> Cobblestone.Path.walk(data, steps)
       [%{id: 1, active: true}]
@@ -159,6 +159,27 @@ defmodule Cobblestone.Path do
     input
     |> Enum.map(fn item -> walk_path(item, expr) end)
     |> walk_path(steps)
+  end
+
+  defp walk_path(input, [{:object, fields} | steps]) do
+    # Build object from field specifications
+    result =
+      Enum.reduce(fields, %{}, fn {key, value_path}, acc ->
+        value = walk_path(input, value_path)
+        Map.put(acc, key, value)
+      end)
+
+    walk_path(result, steps)
+  end
+
+  defp walk_path(input, [{:array, elements} | steps]) do
+    # Build array from element specifications
+    result =
+      Enum.map(elements, fn element_path ->
+        walk_path(input, element_path)
+      end)
+
+    walk_path(result, steps)
   end
 
   defp walk_path(input, [{:function, _name, _args} | steps]) do

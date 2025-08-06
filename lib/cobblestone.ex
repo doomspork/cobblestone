@@ -38,6 +38,8 @@ defmodule Cobblestone do
   - `expr | expr` - Pipeline operations
   - `select(condition)` - Filter elements
   - `map(expression)` - Transform arrays
+  - `{key: .path}` - Object construction
+  - `[.path1, .path2]` - Array construction
 
   ## Error Handling
 
@@ -112,6 +114,26 @@ defmodule Cobblestone do
       iex> Cobblestone.get_at_path(data, ".users[].name")
       {:ok, ["Alice", "Bob"]}
 
+  ## Object Construction
+
+      iex> user = %{"name" => "Alice", "age" => 30, "city" => "NYC"}
+      iex> Cobblestone.get_at_path(user, ~s({"full_name": .name, "user_age": .age}))
+      {:ok, %{"full_name" => "Alice", "user_age" => 30}}
+
+      iex> data = %{"user" => %{"first" => "Alice", "last" => "Smith"}, "role" => "admin"}
+      iex> Cobblestone.get_at_path(data, "{name: .user.first, position: .role}")
+      {:ok, %{"name" => "Alice", "position" => "admin"}}
+
+  ## Array Construction
+
+      iex> product = %{"name" => "Laptop", "price" => 999, "category" => "tech"}
+      iex> Cobblestone.get_at_path(product, "[.name, .price, .category]")
+      {:ok, ["Laptop", 999, "tech"]}
+
+      iex> users = [%{"name" => "Alice", "age" => 25}, %{"name" => "Bob", "age" => 30}]
+      iex> Cobblestone.get_at_path(users, "[[].name, [].age]")
+      {:ok, [["Alice", "Bob"], [25, 30]]}
+
   ## Error Handling
 
       iex> data = %{"user" => %{"name" => "Alice"}}
@@ -157,6 +179,16 @@ defmodule Cobblestone do
       iex> data = %{config: %{database: %{host: "localhost", port: 5432}}}
       iex> Cobblestone.get_at_path!(data, ".config.database")
       %{host: "localhost", port: 5432}
+
+  ## Construction Examples
+
+      iex> api_data = %{"user" => %{"id" => 123, "profile" => %{"name" => "Alice", "email" => "alice@example.com"}}}
+      iex> Cobblestone.get_at_path!(api_data, "{id: .user.id, name: .user.profile.name, contact: .user.profile.email}")
+      %{"id" => 123, "name" => "Alice", "contact" => "alice@example.com"}
+
+      iex> metrics = [%{"name" => "cpu", "value" => 85}, %{"name" => "memory", "value" => 70}]
+      iex> Cobblestone.get_at_path!(metrics, "{names: [].name, values: [].value}")
+      %{"names" => ["cpu", "memory"], "values" => [85, 70]}
 
   ## Error Behavior
 
