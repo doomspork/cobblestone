@@ -66,6 +66,7 @@ defmodule Cobblestone.Parser do
     message
     |> Enum.map_join("", &to_string/1)
     |> String.replace("syntax error before: ", "Unexpected token: ")
+    |> String.trim()
   end
 
   defp format_parser_error(message), do: to_string(message)
