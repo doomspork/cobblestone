@@ -2,11 +2,11 @@
 
 > A better path to data. Powerful data querying and transformation library for Elixir
 
-[![Continuous Integration](https://github.com/doomspork/cobblestone/actions/workflows/ci.yml/badge.svg)](https://github.com/doomspork/cobblestone/actions/workflows/ci.yaml)
+[![Continuous Integration](https://github.com/doomspork/cobblestone/actions/workflows/ci.yaml/badge.svg)](https://github.com/doomspork/cobblestone/actions/workflows/ci.yaml)
 [![Module Version](https://img.shields.io/hexpm/v/cobblestone.svg)](https://hex.pm/packages/cobblestone)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/cobblestone/)
 [![Total Download](https://img.shields.io/hexpm/dt/cobblestone.svg)](https://hex.pm/packages/cobblestone)
-[![License](https://img.shields.io/hexpm/l/cobblestone.svg)](https://github.com/doomspork/cobblestone/blob/master/LICENSE)
+[![License](https://img.shields.io/hexpm/l/cobblestone.svg)](https://github.com/doomspork/cobblestone/blob/master/LICENSE.md)
 [![Last Updated](https://img.shields.io/github/last-commit/doomspork/cobblestone.svg)](https://github.com/doomspork/cobblestone/commits/main)
 
 Cobblestone provides a path-based query language for navigating and filtering nested maps and lists in Elixir, inspired by jq, JSONPath, and XPath. It offers a simple yet powerful syntax for extracting, transforming, and manipulating data structures.
