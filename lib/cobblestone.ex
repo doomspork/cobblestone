@@ -7,7 +7,7 @@ defmodule Cobblestone do
 
   ## Features
 
-  - **Path Navigation**: Direct access (`.store.book`) and recursive search (`..author`)  
+  - **Path Navigation**: Direct access (`.store.book`) and recursive search (`..author`)
   - **Array Operations**: Indexing (`[0]`, `[-1]`), slicing (`[1:3]`), multiple indices (`[0,2,4]`)
   - **Filtering**: Existence filters (`[isbn]`) and comparison filters (`[price>20]`)
   - **Data Transformation**: `map()` for transforming arrays, `select()` for filtering
@@ -21,7 +21,7 @@ defmodule Cobblestone do
       iex> Cobblestone.get_at_path(data, ".store.book[].title")
       {:ok, ["Elixir Guide"]}
 
-      iex> books = [%{title: "Book 1", active: true}, %{title: "Book 2", active: false}]  
+      iex> books = [%{title: "Book 1", active: true}, %{title: "Book 2", active: false}]
       iex> Cobblestone.get_at_path!(books, "[] | select(.active) | map(.title)")
       ["Book 1"]
 
@@ -30,13 +30,13 @@ defmodule Cobblestone do
   - `.key` - Access map key
   - `..key` - Recursive search for key
   - `[n]` - Array index (supports negative indices)
-  - `[n:m]` - Array slice  
+  - `[n:m]` - Array slice
   - `[n,m,o]` - Multiple array indices
   - `[]` - Array/object iterator
   - `[key]` - Filter by key existence
   - `[key>value]` - Filter by comparison
   - `expr | expr` - Pipeline operations
-  - `select(condition)` - Filter elements  
+  - `select(condition)` - Filter elements
   - `map(expression)` - Transform arrays
 
   ## Error Handling
@@ -123,18 +123,19 @@ defmodule Cobblestone do
   """
   def get_at_path(enumerable, path) do
     case Parser.parse(path) do
-      {:ok, tokens} -> 
+      {:ok, tokens} ->
         case Path.walk(enumerable, tokens) do
           nil -> {:error, %{type: :no_match, path: path, message: "Path not found in data structure"}}
           result -> {:ok, result}
         end
-      {:error, error} -> {:error, error}
+
+      {:error, error} ->
+        {:error, error}
     end
   end
 
   @doc """
   Like get_at_path/2 but returns the result directly or raises on error.
-  
   Use this when you want fail-fast behavior or when you're confident the path exists.
   Perfect for pipeline operations where you want to raise on any error.
 
@@ -165,7 +166,7 @@ defmodule Cobblestone do
       ** (ArgumentError) Path not found in data structure
 
       iex> Cobblestone.get_at_path!(%{}, ".invalid[incomplete")
-      ** (ArgumentError) Unexpected token: 
+      ** (ArgumentError) Unexpected token:
 
   """
   def get_at_path!(enumerable, path) do
@@ -177,7 +178,6 @@ defmodule Cobblestone do
 
   @doc """
   Creates a reusable query function for the given path expression.
-  
   Returns a function that takes data and applies the path query, returning
   `{:ok, result}` or `{:error, details}`. Perfect for creating reusable
   data extraction functions.
@@ -205,7 +205,7 @@ defmodule Cobblestone do
 
       iex> get_config = Cobblestone.at(".app.config")
       iex> get_titles = Cobblestone.at(".items[].title")
-      iex> 
+      iex>
       iex> # You can store and reuse these query functions
       iex> queries = %{config: get_config, titles: get_titles}
       iex> data = %{"app" => %{"config" => %{"debug" => true}}, "items" => [%{"title" => "Item 1"}]}
@@ -219,7 +219,6 @@ defmodule Cobblestone do
 
   @doc """
   Creates a reusable query function that returns results directly or raises on error.
-  
   Like `at/1` but the returned function will raise `ArgumentError` on any error
   instead of returning error tuples. Perfect for fail-fast scenarios.
 
@@ -252,7 +251,7 @@ defmodule Cobblestone do
 
       iex> invalid_query = Cobblestone.at!(".invalid[incomplete")
       iex> invalid_query.(%{})
-      ** (ArgumentError) Unexpected token: 
+      ** (ArgumentError) Unexpected token:
 
   """
   def at!(path) do
@@ -261,7 +260,6 @@ defmodule Cobblestone do
 
   @doc """
   Extract multiple values from data using a map of path expressions.
-  
   Takes a data structure and a map where keys are result names and values
   are path expressions. Returns `{:ok, result_map}` with extracted values,
   or `{:error, details}` if any path fails.
@@ -289,7 +287,7 @@ defmodule Cobblestone do
       ...> }
       iex> extractions = %{
       ...>   product_names: ".store.products[].name",
-      ...>   order_totals: ".store.orders[].total", 
+      ...>   order_totals: ".store.orders[].total",
       ...>   active_users: ".users[] | select(.active)"
       ...> }
       iex> Cobblestone.extract(ecommerce, extractions)
@@ -310,7 +308,7 @@ defmodule Cobblestone do
 
   """
   def extract(enumerable, path_map) when is_map(path_map) do
-    results = 
+    results =
       Enum.reduce_while(path_map, {:ok, %{}}, fn {key, path}, {:ok, acc} ->
         case get_at_path(enumerable, path) do
           {:ok, value} -> {:cont, {:ok, Map.put(acc, key, value)}}
@@ -326,7 +324,6 @@ defmodule Cobblestone do
 
   @doc """
   Like extract/2 but returns the result map directly or raises on error.
-  
   Perfect for cases where you expect all paths to succeed and want
   fail-fast behavior.
 
@@ -344,7 +341,7 @@ defmodule Cobblestone do
 
   ## Error Behavior
 
-      iex> data = %{"user" => %{"name" => "Alice"}}  
+      iex> data = %{"user" => %{"name" => "Alice"}}
       iex> paths = %{name: ".user.name", missing: ".user.nonexistent"}
       iex> Cobblestone.extract!(data, paths)
       ** (ArgumentError) Path not found in data structure

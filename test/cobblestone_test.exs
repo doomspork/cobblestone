@@ -276,13 +276,14 @@ defmodule CobblestoneTest do
     end
 
     test "returns structured errors for invalid syntax" do
-      assert {:error, %{type: :parse_error, message: message}} = 
+      assert {:error, %{type: :parse_error, message: message}} =
                Cobblestone.get_at_path(@sample, ".store.book[")
+
       assert String.contains?(message, "Unexpected token")
     end
 
     test "returns structured errors for invalid characters" do
-      assert {:error, %{type: :lexer_error}} = 
+      assert {:error, %{type: :lexer_error}} =
                Cobblestone.get_at_path(@sample, ".store.book@")
     end
 
@@ -321,7 +322,7 @@ defmodule CobblestoneTest do
       assert [%{"price" => 25.0, title: "Book 1"}] ==
                Cobblestone.get_at_path!(mixed_data, ".store.book")
 
-      assert ["Book 1"] == 
+      assert ["Book 1"] ==
                Cobblestone.get_at_path!(mixed_data, ".store.book[].title")
 
       assert [25.0] ==
@@ -339,36 +340,39 @@ defmodule CobblestoneTest do
     test "supports pipeline-friendly at!/1 function" do
       get_color = Cobblestone.at!(".store.bicycle.color")
       assert "red" == @sample |> get_color.()
-      
       get_authors = Cobblestone.at!("..author")
+
       assert ["Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien"] ==
                @sample |> get_authors.()
     end
 
     test "extract/2 extracts multiple paths" do
-      result = Cobblestone.extract(@sample, %{
-        color: ".store.bicycle.color",
-        price: ".store.bicycle.price",
-        titles: ".store.book[].title"
-      })
+      result =
+        Cobblestone.extract(@sample, %{
+          color: ".store.bicycle.color",
+          price: ".store.bicycle.price",
+          titles: ".store.book[].title"
+        })
 
-      assert {:ok, %{
-        color: "red",
-        price: 19.95,
-        titles: ["Sayings of the Century", "Sword of Honour", "Moby Dick", "The Lord of the Rings"]
-      }} == result
+      assert {:ok,
+              %{
+                color: "red",
+                price: 19.95,
+                titles: ["Sayings of the Century", "Sword of Honour", "Moby Dick", "The Lord of the Rings"]
+              }} == result
     end
 
     test "extract!/2 extracts multiple paths and raises on error" do
-      result = Cobblestone.extract!(@sample, %{
-        color: ".store.bicycle.color",
-        authors: "..author"
-      })
+      result =
+        Cobblestone.extract!(@sample, %{
+          color: ".store.bicycle.color",
+          authors: "..author"
+        })
 
       assert %{
-        color: "red", 
-        authors: ["Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien"]
-      } == result
+               color: "red",
+               authors: ["Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien"]
+             } == result
     end
   end
 end

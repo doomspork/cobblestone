@@ -12,7 +12,7 @@ defmodule Cobblestone.Path do
   - **Local Navigation**: `.key` - Access map keys directly
   - **Global Search**: `..key` - Recursively find all instances of a key
   - **Array Operations**: `[n]`, `[n:m]`, `[n,m,o]` - Index, slice, multi-select
-  - **Collection Iteration**: `[]` - Iterate over arrays or map values  
+  - **Collection Iteration**: `[]` - Iterate over arrays or map values
   - **Filtering**: `[key]`, `[key>value]` - Filter by existence or comparison
   - **Functions**: `select(condition)`, `map(expression)` - Advanced data processing
   - **Pipeline Chaining**: `expr | expr` - Chain operations together
@@ -31,7 +31,7 @@ defmodule Cobblestone.Path do
       iex> Cobblestone.Path.walk(data, steps)
       ["Alice"]
 
-      iex> data = [%{id: 1, active: true}, %{id: 2, active: false}]  
+      iex> data = [%{id: 1, active: true}, %{id: 2, active: false}]
       iex> steps = [{:iterator}, {:function, "select", [[{:local, "active"}]]}]
       iex> Cobblestone.Path.walk(data, steps)
       [%{id: 1, active: true}]
@@ -44,42 +44,7 @@ defmodule Cobblestone.Path do
     walk_path(input, steps)
   end
 
-  defp all_matches(value, search, acc) when is_map(value) do
-    value
-    |> Map.to_list()
-    |> all_matches(search, acc)
-  end
-
-  defp all_matches([value | tail], search, acc) when is_map(value) do
-    all_matches(Map.to_list(value) ++ tail, search, acc)
-  end
-
-  defp all_matches([{key, value} | tail], search, acc) when is_map(value) do
-    all_matches([{key, Map.to_list(value)} | tail], search, acc)
-  end
-
-  defp all_matches([{key, value} | tail], search, acc) do
-    sub_acc =
-      cond do
-        keys_match?(key, search) and is_list(value) -> value
-        keys_match?(key, search) -> [value]
-        true -> []
-      end
-
-    all_matches(value, search, sub_acc) ++ all_matches(tail, search, acc)
-  end
-
-  # Helper to match keys, handling both string/atom combinations
-  defp keys_match?(key, search) when is_binary(search) do
-    key == search or (is_atom(key) and Atom.to_string(key) == search)
-  end
-
-  defp keys_match?(key, search), do: key == search
-
-  defp all_matches(_tail, _search, acc) do
-    acc
-  end
-
+  # All walk_path/2 function clauses grouped together
   defp walk_path(input, []) do
     input
   end
@@ -112,20 +77,10 @@ defmodule Cobblestone.Path do
     |> walk_path(steps)
   end
 
-  # Helper function to get key from map, trying both string and atom versions
-  defp get_key(map, key) when is_map(map) and is_binary(key) do
-    Map.get(map, key) || Map.get(map, String.to_existing_atom(key))
-  rescue
-    ArgumentError -> Map.get(map, key)
-  end
-
-  defp get_key(map, key) when is_map(map), do: Map.get(map, key)
-  defp get_key(_, _), do: nil
-
   defp walk_path(input, [{:iterator} | steps]) when is_list(input) do
     # For arrays, [] iterates over each element
     input
-    |> Enum.flat_map(fn item -> 
+    |> Enum.flat_map(fn item ->
       result = walk_path(item, steps)
       if is_list(result), do: result, else: [result]
     end)
@@ -193,16 +148,6 @@ defmodule Cobblestone.Path do
     |> walk_path(steps)
   end
 
-  # Helper to check if map has key, supporting both string and atom keys
-  defp has_key?(map, key) when is_map(map) and is_binary(key) do
-    Map.has_key?(map, key) or Map.has_key?(map, String.to_existing_atom(key))
-  rescue
-    ArgumentError -> Map.has_key?(map, key)
-  end
-
-  defp has_key?(map, key) when is_map(map), do: Map.has_key?(map, key)
-  defp has_key?(_, _), do: false
-
   defp walk_path(input, [{:indices, {first, nil}} | steps]) do
     input
     |> Enum.slice(first..length(input))
@@ -226,6 +171,63 @@ defmodule Cobblestone.Path do
     |> Enum.map(&Enum.at(input, &1))
     |> walk_path(steps)
   end
+
+  # Helper functions
+  defp all_matches(value, search, acc) when is_map(value) do
+    value
+    |> Map.to_list()
+    |> all_matches(search, acc)
+  end
+
+  defp all_matches([value | tail], search, acc) when is_map(value) do
+    all_matches(Map.to_list(value) ++ tail, search, acc)
+  end
+
+  defp all_matches([{key, value} | tail], search, acc) when is_map(value) do
+    all_matches([{key, Map.to_list(value)} | tail], search, acc)
+  end
+
+  defp all_matches([{key, value} | tail], search, acc) do
+    sub_acc =
+      cond do
+        keys_match?(key, search) and is_list(value) -> value
+        keys_match?(key, search) -> [value]
+        true -> []
+      end
+
+    all_matches(value, search, sub_acc) ++ all_matches(tail, search, acc)
+  end
+
+  defp all_matches(_tail, _search, acc) do
+    acc
+  end
+
+  # Helper to match keys, handling both string/atom combinations
+  defp keys_match?(key, search) when is_binary(search) do
+    key == search or (is_atom(key) and Atom.to_string(key) == search)
+  end
+
+  defp keys_match?(key, search), do: key == search
+
+  # Helper function to get key from map, trying both string and atom versions
+  defp get_key(map, key) when is_map(map) and is_binary(key) do
+    Map.get(map, key) || Map.get(map, String.to_existing_atom(key))
+  rescue
+    ArgumentError -> Map.get(map, key)
+  end
+
+  defp get_key(map, key) when is_map(map), do: Map.get(map, key)
+  defp get_key(_, _), do: nil
+
+  # Helper to check if map has key, supporting both string and atom keys
+  defp has_key?(map, key) when is_map(map) and is_binary(key) do
+    Map.has_key?(map, key) or Map.has_key?(map, String.to_existing_atom(key))
+  rescue
+    ArgumentError -> Map.has_key?(map, key)
+  end
+
+  defp has_key?(map, key) when is_map(map), do: Map.has_key?(map, key)
+  defp has_key?(_, _), do: false
 
   defp compare(input, key, op, right) do
     left = get_key(input, key)

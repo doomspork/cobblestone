@@ -36,32 +36,35 @@ defmodule Cobblestone.Parser do
     case :cs_lexer.string(input) do
       {:ok, tokens, _} ->
         case :cs_parser.parse(tokens) do
-          {:ok, ast} -> {:ok, ast}
+          {:ok, ast} ->
+            {:ok, ast}
+
           {:error, {line, :cs_parser, message}} ->
-            {:error, %{
-              type: :parse_error,
-              line: line,
-              path: path,
-              message: format_parser_error(message),
-              raw_error: message
-            }}
+            {:error,
+             %{
+               type: :parse_error,
+               line: line,
+               path: path,
+               message: format_parser_error(message),
+               raw_error: message
+             }}
         end
-      
+
       {:error, {line, :cs_lexer, {reason, _}}, _} ->
-        {:error, %{
-          type: :lexer_error,
-          line: line, 
-          path: path,
-          message: format_lexer_error(reason),
-          raw_error: reason
-        }}
+        {:error,
+         %{
+           type: :lexer_error,
+           line: line,
+           path: path,
+           message: format_lexer_error(reason),
+           raw_error: reason
+         }}
     end
   end
 
   defp format_parser_error(message) when is_list(message) do
     message
-    |> Enum.map(&to_string/1)
-    |> Enum.join("")
+    |> Enum.map_join("", &to_string/1)
     |> String.replace("syntax error before: ", "Unexpected token: ")
   end
 
