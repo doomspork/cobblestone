@@ -128,7 +128,9 @@ defmodule Cobblestone do
           nil -> {:error, %{type: :no_match, path: path, message: "Path not found in data structure"}}
           result -> {:ok, result}
         end
-      {:error, error} -> {:error, error}
+
+      {:error, error} ->
+        {:error, error}
     end
   end
 

@@ -36,25 +36,29 @@ defmodule Cobblestone.Parser do
     case :cs_lexer.string(input) do
       {:ok, tokens, _} ->
         case :cs_parser.parse(tokens) do
-          {:ok, ast} -> {:ok, ast}
+          {:ok, ast} ->
+            {:ok, ast}
+
           {:error, {line, :cs_parser, message}} ->
-            {:error, %{
-              type: :parse_error,
-              line: line,
-              path: path,
-              message: format_parser_error(message),
-              raw_error: message
-            }}
+            {:error,
+             %{
+               type: :parse_error,
+               line: line,
+               path: path,
+               message: format_parser_error(message),
+               raw_error: message
+             }}
         end
 
       {:error, {line, :cs_lexer, {reason, _}}, _} ->
-        {:error, %{
-          type: :lexer_error,
-          line: line,
-          path: path,
-          message: format_lexer_error(reason),
-          raw_error: reason
-        }}
+        {:error,
+         %{
+           type: :lexer_error,
+           line: line,
+           path: path,
+           message: format_lexer_error(reason),
+           raw_error: reason
+         }}
     end
   end
 

@@ -278,6 +278,7 @@ defmodule CobblestoneTest do
     test "returns structured errors for invalid syntax" do
       assert {:error, %{type: :parse_error, message: message}} =
                Cobblestone.get_at_path(@sample, ".store.book[")
+
       assert String.contains?(message, "Unexpected token")
     end
 
@@ -341,34 +342,38 @@ defmodule CobblestoneTest do
       assert "red" == @sample |> get_color.()
 
       get_authors = Cobblestone.at!("..author")
+
       assert ["Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien"] ==
                @sample |> get_authors.()
     end
 
     test "extract/2 extracts multiple paths" do
-      result = Cobblestone.extract(@sample, %{
-        color: ".store.bicycle.color",
-        price: ".store.bicycle.price",
-        titles: ".store.book[].title"
-      })
+      result =
+        Cobblestone.extract(@sample, %{
+          color: ".store.bicycle.color",
+          price: ".store.bicycle.price",
+          titles: ".store.book[].title"
+        })
 
-      assert {:ok, %{
-        color: "red",
-        price: 19.95,
-        titles: ["Sayings of the Century", "Sword of Honour", "Moby Dick", "The Lord of the Rings"]
-      }} == result
+      assert {:ok,
+              %{
+                color: "red",
+                price: 19.95,
+                titles: ["Sayings of the Century", "Sword of Honour", "Moby Dick", "The Lord of the Rings"]
+              }} == result
     end
 
     test "extract!/2 extracts multiple paths and raises on error" do
-      result = Cobblestone.extract!(@sample, %{
-        color: ".store.bicycle.color",
-        authors: "..author"
-      })
+      result =
+        Cobblestone.extract!(@sample, %{
+          color: ".store.bicycle.color",
+          authors: "..author"
+        })
 
       assert %{
-        color: "red",
-        authors: ["Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien"]
-      } == result
+               color: "red",
+               authors: ["Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien"]
+             } == result
     end
   end
 end
