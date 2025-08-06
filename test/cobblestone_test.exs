@@ -244,5 +244,35 @@ defmodule CobblestoneTest do
       assert @sample["store"]["bicycle"] in result
       assert @sample["store"]["book"] in result
     end
+
+    test "supports select() function" do
+      # Select books with isbn field (existence check)
+      assert [
+               %{
+                 "category" => "fiction",
+                 "author" => "Herman Melville",
+                 "title" => "Moby Dick",
+                 "isbn" => "0-553-21311-3",
+                 "price" => 8.99
+               },
+               %{
+                 "category" => "fiction",
+                 "author" => "J. R. R. Tolkien",
+                 "title" => "The Lord of the Rings",
+                 "isbn" => "0-395-19395-8",
+                 "price" => 22.99
+               }
+             ] == Cobblestone.get_at_path(@sample, ".store.book[] | select(.isbn)")
+    end
+
+    test "supports map() function" do
+      # Map to extract just titles
+      assert ["Sayings of the Century", "Sword of Honour", "Moby Dick", "The Lord of the Rings"] ==
+               Cobblestone.get_at_path(@sample, ".store.book | map(.title)")
+
+      # Map to extract authors
+      assert ["Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien"] ==
+               Cobblestone.get_at_path(@sample, ".store.book | map(.author)")
+    end
   end
 end

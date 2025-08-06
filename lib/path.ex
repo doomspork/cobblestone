@@ -96,6 +96,44 @@ defmodule Cobblestone.Path do
     walk_path(input, steps)
   end
 
+  defp walk_path(input, [{:function, "select", [condition]} | steps]) when is_list(input) do
+    # Apply select to each element in a list
+    input
+    |> Enum.filter(fn item ->
+      case walk_path(item, condition) do
+        true -> true
+        false -> false
+        nil -> false
+        [] -> false
+        _ -> true
+      end
+    end)
+    |> walk_path(steps)
+  end
+
+  defp walk_path(input, [{:function, "select", [condition]} | steps]) do
+    # Apply select to a single item
+    case walk_path(input, condition) do
+      true -> walk_path(input, steps)
+      false -> nil
+      nil -> nil
+      [] -> nil
+      _ -> walk_path(input, steps)
+    end
+  end
+
+  defp walk_path(input, [{:function, "map", [expr]} | steps]) when is_list(input) do
+    # Apply map to transform each element
+    input
+    |> Enum.map(fn item -> walk_path(item, expr) end)
+    |> walk_path(steps)
+  end
+
+  defp walk_path(input, [{:function, _name, _args} | steps]) do
+    # Unknown function, pass through for now
+    walk_path(input, steps)
+  end
+
   defp walk_path(input, [{:filter, {key, op, val}} | steps]) do
     input
     |> Enum.filter(&compare(&1, key, op, val))
