@@ -4,7 +4,30 @@ defmodule Cobblestone.Parser do
 
   This module provides parsing functionality to convert string-based path expressions
   into structured tokens that can be used for data traversal. It leverages generated
-  lexer and parser modules to tokenize and parse path expressions.
+  lexer and parser modules built with Erlang's :leex and :yecc tools.
+
+  ## Error Handling
+
+  The parser provides structured error responses with helpful context when
+  parsing fails, rather than crashing or returning cryptic error tuples.
+
+  ## Examples
+
+      iex> Cobblestone.Parser.parse(".user.name")
+      {:ok, [{:local, "user"}, {:local, "name"}]}
+
+      iex> Cobblestone.Parser.parse(".items[0]")
+      {:ok, [{:local, "items"}, {:indices, [0]}]}
+
+      iex> Cobblestone.Parser.parse(".books[] | select(.price > 20)")
+      {:ok, [{:pipe, [{:local, "books"}, {:iterator}], [{:function, "select", [[{:local, "price"}, {:cmp, ">", 20}]]}]}]}
+
+      iex> {:error, %{type: :parse_error, message: message}} = Cobblestone.Parser.parse(".invalid[")
+      iex> String.contains?(message, "Unexpected token")
+      true
+
+      iex> {:error, %{type: :lexer_error}} = Cobblestone.Parser.parse(".field@invalid")
+
   """
 
   def parse(path) do
@@ -37,7 +60,7 @@ defmodule Cobblestone.Parser do
 
   defp format_parser_error(message) when is_list(message) do
     Enum.map_join(message, "", &to_string/1)
-    |> String.replace("syntax error before: ", "Unexpected token: ")
+    |> String.replace("syntax error before: ", "Unexpected token:")
   end
 
   defp format_parser_error(message), do: to_string(message)
