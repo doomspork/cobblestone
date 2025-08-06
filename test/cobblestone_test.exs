@@ -374,5 +374,56 @@ defmodule CobblestoneTest do
                authors: ["Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien"]
              } == result
     end
+
+    test "supports object construction {key: .path}" do
+      user_data = %{"name" => "Alice", "age" => 30, "city" => "New York"}
+      
+      # Simple object construction using path syntax
+      assert %{"full_name" => "Alice", "user_age" => 30} ==
+               Cobblestone.get_at_path!(user_data, "{\"full_name\": .name, \"user_age\": .age}")
+
+      # Object construction with variable keys
+      assert %{"location" => "New York"} ==
+               Cobblestone.get_at_path!(user_data, "{location: .city}")
+    end
+
+    test "supports array construction [.path1, .path2]" do
+      product_data = %{"name" => "Laptop", "price" => 999, "category" => "tech"}
+      
+      # Simple array construction using path syntax
+      assert ["Laptop", 999, "tech"] ==
+               Cobblestone.get_at_path!(product_data, "[.name, .price, .category]")
+
+      # Array construction from multiple sources
+      user_data = %{"first" => "Alice", "last" => "Smith", "age" => 30}
+      assert ["Alice", "Smith", 30] ==
+               Cobblestone.get_at_path!(user_data, "[.first, .last, .age]")
+    end
+
+    test "supports nested construction with object in array" do
+      data = %{"user" => %{"name" => "Alice", "age" => 25}, "role" => "admin"}
+      
+      # Array containing an object
+      result = Cobblestone.get_at_path!(data, "[{name: .user.name, role: .role}, .user.age]")
+      expected = [%{"name" => "Alice", "role" => "admin"}, 25]
+      
+      assert expected == result
+    end
+
+    test "supports construction with identity and pipelines" do
+      books = [
+        %{"title" => "Book A", "active" => false},
+        %{"title" => "Book B", "active" => true}
+      ]
+      
+      # Create summary object using array iteration and filtering
+      result = Cobblestone.get_at_path!(books, "{titles: [].title, active_books: .[] | select(.active)}")
+      expected = %{
+        "titles" => ["Book A", "Book B"],
+        "active_books" => [%{"title" => "Book B", "active" => true}]
+      }
+      
+      assert expected == result
+    end
   end
 end

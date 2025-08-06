@@ -131,6 +131,27 @@ defmodule Cobblestone.Path do
     |> walk_path(steps)
   end
 
+  defp walk_path(input, [{:object, fields} | steps]) do
+    # Build object from field specifications
+    result = 
+      Enum.reduce(fields, %{}, fn {key, value_path}, acc ->
+        value = walk_path(input, value_path)
+        Map.put(acc, key, value)
+      end)
+    
+    walk_path(result, steps)
+  end
+
+  defp walk_path(input, [{:array, elements} | steps]) do
+    # Build array from element specifications
+    result = 
+      Enum.map(elements, fn element_path ->
+        walk_path(input, element_path)
+      end)
+    
+    walk_path(result, steps)
+  end
+
   defp walk_path(input, [{:function, _name, _args} | steps]) do
     # Unknown function, pass through for now
     walk_path(input, steps)

@@ -1,5 +1,5 @@
-Nonterminals path pipeline step group filters indices comparsion value function funcargs.
-Terminals var int cmp '[' ']' ',' ':' '.' '!' '|' '(' ')'. 
+Nonterminals path pipeline step group filters indices comparsion value function funcargs object objfields objfield array arrfields.
+Terminals var int cmp '[' ']' ',' ':' '.' '!' '|' '(' ')' '{' '}' string. 
 Rootsymbol pipeline.
 
 pipeline -> path : '$1'.
@@ -11,6 +11,8 @@ path -> path step : '$1' ++ '$2'.
 
 step -> group : '$1'.
 step -> function : '$1'.
+step -> object : '$1'.
+step -> array : '$1'.
 step -> '.' var : [{local, list_to_binary(unwrap('$2'))}].
 step -> '.' '.' var : [{global, list_to_binary(unwrap('$3'))}].
 
@@ -38,6 +40,20 @@ indices -> int ',' indices : [unwrap('$1')] ++ '$3'.
 
 value -> int : unwrap('$1').
 value -> var : list_to_binary(unwrap('$1')).
+
+object -> '{' '}' : [{object, []}].
+object -> '{' objfields '}' : [{object, '$2'}].
+
+objfields -> objfield : ['$1'].
+objfields -> objfield ',' objfields : ['$1'] ++ '$3'.
+
+objfield -> string ':' pipeline : {list_to_binary(unwrap('$1')), '$3'}.
+objfield -> var ':' pipeline : {list_to_binary(unwrap('$1')), '$3'}.
+
+array -> '[' arrfields ']' : [{array, '$2'}].
+
+arrfields -> pipeline : ['$1'].
+arrfields -> pipeline ',' arrfields : ['$1'] ++ '$3'.
 
 Erlang code.
 

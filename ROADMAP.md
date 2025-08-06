@@ -73,7 +73,7 @@ Cobblestone currently implements a subset of JSONPath/XPath functionality:
   5. Testing & Documentation
 
   - Property-based testing with StreamData
-  - Comprehensive doctest examples
+  - ✅ Comprehensive doctest examples - COMPLETED
   - Performance benchmarks
 
   Recommended Implementation Roadmap
@@ -114,6 +114,7 @@ Cobblestone currently implements a subset of JSONPath/XPath functionality:
 - ✅ Enhanced error handling with structured error responses
 - ✅ Comprehensive Elixir integration (atoms, pipelines, extraction)
 - ✅ Extensive test coverage for all new features
+- ✅ Comprehensive doctest examples (39 working examples)
 
 ### 🚀 New Capabilities Added
 
