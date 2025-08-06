@@ -47,6 +47,7 @@ defmodule Cobblestone.MixProject do
       description: "A better path to data. Powerful data querying and transformation library for Elixir",
       files: [
         "lib",
+        "src",
         "mix.exs",
         "README.md",
         "LICENSE.md",
