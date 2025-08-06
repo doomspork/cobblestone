@@ -49,14 +49,18 @@ Inspired by [jq](https://stedolan.github.io/jq/), [JSONPath](https://goessner.ne
 | -------------------- | --------------------------------------- | -------------------------------- | ----------------------------------------------------------- |
 | /store/book/author   | $.store.book[*].author                  | .store.book[].author             | the authors of all books in the store                       |
 | //author             | $..author                               | ..author                         | all authors                                                 |
-| /store/\*            | $.store.\*                              | .store                           | all things in store, which are some books and a red bicycle |
+| /store/\*            | $.store.\*                              | .store[]                         | all things in store, which are some books and a red bicycle |
 | /store//price        | $.store..price                          | .store..price                    | the price of everything in the store.                       |
 | //book[3]            | $..book[2]                              | ..book[2]                        | the third book                                              |
 | //book[last()]       | $..book[(@.length-1)]<br />$..book[-1:] | ..book[-1]                       | the last book in order.                                     |
-| //book[position()<3] | $..book[0,1]<br />$..book[:2]           | ..book[0,1]<br />.store.book[:2] | the first two books                                         |
+| //book[position()<3] | $..book[0,1]<br />$..book[:2]           | ..book[0,1]<br />..book[:2]      | the first two books                                         |
 | //book[isbn]         | $..book[?(@.isbn)]                      | ..book[isbn]                     | filter all books with isbn number                           |
 | //book[price<10]     | $..book[?(@.price<10)]                  | ..book[price<10]                 | filter all books cheapier than 10                           |
-| //\*                 | $..\*                                   | .                                | all Elements in structure.                                  |
+| //book[price>20]     | $..book[?(@.price>20)]                  | ..book[price>20]                 | filter all books more expensive than 20                     |
+| //\*                 | $..\*                                   | .                                | all elements in structure                                   |
+|                      | $.store.book[?(@.isbn)] \| [?(@.price<10)] | .store.book \| [isbn] \| [price<10] | chain operations: books with isbn AND price < 10         |
+|                      | $.store.book[*].title                   | .store.book \| map(.title)       | extract all book titles using map function                  |
+|                      | $.store.book[?(@.isbn)]                 | .store.book[] \| select(.isbn)   | select books that have isbn field                           |
 
 ## Installation
 
