@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/doomspork/cobblestone/compare/v1.0.0...v1.0.1) (2025-08-06)
+
+
+### Bug Fixes
+
+* Missing src/ directory in release ([45609a9](https://github.com/doomspork/cobblestone/commit/45609a9c54a52ff5222b071a687c796566c02024))
+
 ## 1.0.0 (2025-08-06)
 
 
