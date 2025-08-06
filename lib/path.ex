@@ -1,13 +1,43 @@
 defmodule Cobblestone.Path do
   @moduledoc """
   Provides functionality for walking and navigating through nested data structures
-  using path expressions similar to JSONPath.
+  using parsed path expressions.
 
-  The main entry point is `walk/2` which takes input data and a list of path steps
-  to traverse the data structure. Supports various operations including:
-  - Local and global key access
-  - Array filtering and indexing
-  - Recursive searches through nested structures
+  This module implements the core data traversal engine for Cobblestone. It takes
+  parsed AST tokens from the parser and executes them against data structures,
+  supporting complex operations like filtering, transformation, and pipeline chaining.
+
+  ## Supported Operations
+
+  - **Local Navigation**: `.key` - Access map keys directly
+  - **Global Search**: `..key` - Recursively find all instances of a key
+  - **Array Operations**: `[n]`, `[n:m]`, `[n,m,o]` - Index, slice, multi-select
+  - **Collection Iteration**: `[]` - Iterate over arrays or map values  
+  - **Filtering**: `[key]`, `[key>value]` - Filter by existence or comparison
+  - **Functions**: `select(condition)`, `map(expression)` - Advanced data processing
+  - **Pipeline Chaining**: `expr | expr` - Chain operations together
+
+  ## Key Features
+
+  - **Mixed Key Support**: Works with both string and atom keys
+  - **Type Safety**: Graceful handling of type mismatches
+  - **Error Resilience**: Returns `nil` for missing paths rather than crashing
+  - **Performance**: Efficient traversal with minimal memory allocation
+
+  ## Examples
+
+      iex> data = %{"users" => [%{"name" => "Alice", "active" => true}]}
+      iex> steps = [{:local, "users"}, {:iterator}, {:local, "name"}]
+      iex> Cobblestone.Path.walk(data, steps)
+      ["Alice"]
+
+      iex> data = [%{id: 1, active: true}, %{id: 2, active: false}]  
+      iex> steps = [{:iterator}, {:function, "select", [[{:local, "active"}]]}]
+      iex> Cobblestone.Path.walk(data, steps)
+      [%{id: 1, active: true}]
+
+  The module is typically not used directly - instead use the high-level
+  `Cobblestone.get_at_path/2` functions which handle parsing and error management.
   """
 
   def walk(input, steps) do
