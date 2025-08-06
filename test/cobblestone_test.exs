@@ -192,5 +192,29 @@ defmodule CobblestoneTest do
                }
              ] == Cobblestone.get_at_path(@sample, "..book[price>20]")
     end
+
+    test "supports pipe operator |" do
+      # Get all books then filter by price
+      assert [
+               %{
+                 "author" => "J. R. R. Tolkien",
+                 "category" => "fiction",
+                 "isbn" => "0-395-19395-8",
+                 "price" => 22.99,
+                 "title" => "The Lord of the Rings"
+               }
+             ] == Cobblestone.get_at_path(@sample, ".store.book | [price>20]")
+
+      # Chain multiple operations
+      assert [
+               %{
+                 "author" => "Herman Melville",
+                 "category" => "fiction",
+                 "isbn" => "0-553-21311-3",
+                 "price" => 8.99,
+                 "title" => "Moby Dick"
+               }
+             ] == Cobblestone.get_at_path(@sample, ".store.book | [isbn] | [price<10]")
+    end
   end
 end
