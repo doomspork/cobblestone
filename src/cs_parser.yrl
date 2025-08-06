@@ -1,5 +1,5 @@
-Nonterminals path pipeline step group filters indices comparsion value.
-Terminals var int cmp '[' ']' ',' ':' '.' '!' '|'. 
+Nonterminals path pipeline step group filters indices comparsion value function funcargs.
+Terminals var int cmp '[' ']' ',' ':' '.' '!' '|' '(' ')'. 
 Rootsymbol pipeline.
 
 pipeline -> path : '$1'.
@@ -10,8 +10,15 @@ path -> step : '$1'.
 path -> path step : '$1' ++ '$2'.
 
 step -> group : '$1'.
+step -> function : '$1'.
 step -> '.' var : [{local, list_to_binary(unwrap('$2'))}].
 step -> '.' '.' var : [{global, list_to_binary(unwrap('$3'))}].
+
+function -> var '(' ')' : [{function, list_to_binary(unwrap('$1')), []}].
+function -> var '(' funcargs ')' : [{function, list_to_binary(unwrap('$1')), '$3'}].
+
+funcargs -> pipeline : ['$1'].
+funcargs -> pipeline ',' funcargs : ['$1'] ++ '$3'.
 
 group -> '[' ']' : [{iterator}].
 group -> '[' filters ']' : '$2'.
