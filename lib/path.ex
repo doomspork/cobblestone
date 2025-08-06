@@ -14,6 +14,7 @@ defmodule Cobblestone.Path do
     walk_path(input, steps)
   end
 
+  # All all_matches/3 clauses grouped together
   defp all_matches(value, search, acc) when is_map(value) do
     value
     |> Map.to_list()
@@ -31,8 +32,8 @@ defmodule Cobblestone.Path do
   defp all_matches([{key, value} | tail], search, acc) do
     sub_acc =
       cond do
-        key == search and is_list(value) -> value
-        key == search -> [value]
+        keys_match?(key, search) and is_list(value) -> value
+        keys_match?(key, search) -> [value]
         true -> []
       end
 
@@ -43,6 +44,7 @@ defmodule Cobblestone.Path do
     acc
   end
 
+  # All walk_path/2 clauses grouped together
   defp walk_path(input, []) do
     input
   end
@@ -65,13 +67,13 @@ defmodule Cobblestone.Path do
 
   defp walk_path(inputs, [{:local, key} | steps]) when is_list(inputs) do
     inputs
-    |> Enum.map(&Map.get(&1, key))
+    |> Enum.map(&get_key(&1, key))
     |> walk_path(steps)
   end
 
   defp walk_path(input, [{:local, key} | steps]) do
     input
-    |> Map.get(key)
+    |> get_key(key)
     |> walk_path(steps)
   end
 
@@ -142,7 +144,7 @@ defmodule Cobblestone.Path do
 
   defp walk_path(input, [{:filter, step} | steps]) do
     input
-    |> Enum.filter(&Map.has_key?(&1, step))
+    |> Enum.filter(&has_key?(&1, step))
     |> walk_path(steps)
   end
 
@@ -170,8 +172,35 @@ defmodule Cobblestone.Path do
     |> walk_path(steps)
   end
 
+  # Helper functions
+  defp keys_match?(key, search) when is_binary(search) do
+    key == search or (is_atom(key) and Atom.to_string(key) == search)
+  end
+
+  defp keys_match?(key, search), do: key == search
+
+  # Helper function to get key from map, trying both string and atom versions
+  defp get_key(map, key) when is_map(map) and is_binary(key) do
+    Map.get(map, key) || Map.get(map, String.to_existing_atom(key))
+  rescue
+    ArgumentError -> Map.get(map, key)
+  end
+
+  defp get_key(map, key) when is_map(map), do: Map.get(map, key)
+  defp get_key(_, _), do: nil
+
+  # Helper to check if map has key, supporting both string and atom keys
+  defp has_key?(map, key) when is_map(map) and is_binary(key) do
+    Map.has_key?(map, key) or Map.has_key?(map, String.to_existing_atom(key))
+  rescue
+    ArgumentError -> Map.has_key?(map, key)
+  end
+
+  defp has_key?(map, key) when is_map(map), do: Map.has_key?(map, key)
+  defp has_key?(_, _), do: false
+
   defp compare(input, key, op, right) do
-    left = Map.get(input, key)
+    left = get_key(input, key)
     apply(Kernel, String.to_existing_atom(op), [left, right])
   end
 end

@@ -19,5 +19,6 @@ Rules.
 \(            : {token, {'(', TokenLine}}.
 \)            : {token, {')', TokenLine}}.
 {WHITESPACE}+ : skip_token.
+.             : {error, illegal}.
 
 Erlang code.
