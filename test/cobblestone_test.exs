@@ -216,5 +216,16 @@ defmodule CobblestoneTest do
                }
              ] == Cobblestone.get_at_path(@sample, ".store.book | [isbn] | [price<10]")
     end
+
+    test "supports identity filter ." do
+      # Identity filter returns entire structure
+      assert @sample == Cobblestone.get_at_path(@sample, ".")
+
+      # Identity filter with pipe
+      assert %{
+               "color" => "red",
+               "price" => 19.95
+             } == Cobblestone.get_at_path(@sample, ".store.bicycle | .")
+    end
   end
 end
