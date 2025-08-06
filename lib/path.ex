@@ -1,4 +1,15 @@
 defmodule Cobblestone.Path do
+  @moduledoc """
+  Provides functionality for walking and navigating through nested data structures
+  using path expressions similar to JSONPath.
+
+  The main entry point is `walk/2` which takes input data and a list of path steps
+  to traverse the data structure. Supports various operations including:
+  - Local and global key access
+  - Array filtering and indexing
+  - Recursive searches through nested structures
+  """
+
   def walk(input, steps) do
     walk_path(input, steps)
   end
