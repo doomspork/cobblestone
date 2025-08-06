@@ -1,6 +1,9 @@
-Nonterminals path step group filters indices comparsion value.
-Terminals var int cmp '[' ']' ',' ':' '.' '!'. 
-Rootsymbol path.
+Nonterminals path pipeline step group filters indices comparsion value.
+Terminals var int cmp '[' ']' ',' ':' '.' '!' '|'. 
+Rootsymbol pipeline.
+
+pipeline -> path : '$1'.
+pipeline -> path '|' pipeline : [{pipe, '$1', '$3'}].
 
 path -> step : '$1'.
 path -> path step : '$1' ++ '$2'.
