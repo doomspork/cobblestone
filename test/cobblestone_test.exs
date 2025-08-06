@@ -227,5 +227,22 @@ defmodule CobblestoneTest do
                "price" => 19.95
              } == Cobblestone.get_at_path(@sample, ".store.bicycle | .")
     end
+
+    test "supports array/object iterator []" do
+      # Iterate over array elements
+      assert ["Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien"] ==
+               Cobblestone.get_at_path(@sample, ".store.book[].author")
+
+      # Get all prices from books
+      assert [8.95, 12.99, 8.99, 22.99] ==
+               Cobblestone.get_at_path(@sample, ".store.book[].price")
+
+      # Iterate over object values - should return values only
+      result = Cobblestone.get_at_path(@sample, ".store[]")
+      # The result is a list containing the book array and bicycle map
+      assert length(result) == 2
+      assert @sample["store"]["bicycle"] in result
+      assert @sample["store"]["book"] in result
+    end
   end
 end

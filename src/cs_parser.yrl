@@ -13,7 +13,7 @@ step -> group : '$1'.
 step -> '.' var : [{local, list_to_binary(unwrap('$2'))}].
 step -> '.' '.' var : [{global, list_to_binary(unwrap('$3'))}].
 
-group -> '[' ']' : [].
+group -> '[' ']' : [{iterator}].
 group -> '[' filters ']' : '$2'.
 
 filters -> comparsion : [{filter, '$1'}].
